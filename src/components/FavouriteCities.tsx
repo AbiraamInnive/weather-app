@@ -10,11 +10,11 @@ export default function FavoriteCities() {
   const removeFavorite = useWeatherStore((state) => state.removeFavorite); // <-- NEW
 
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [data, setData] = useState<any>(null);
-  const [forecast, setForecast] = useState<any[]>([]);
+  const [data, setData] = useState(null);
+  const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { unit, favorites, addFavorite } = useWeatherStore();
+  const { unit, favorites } = useWeatherStore();
 
   useEffect(() => {
     if (selectedCity) {
@@ -41,6 +41,7 @@ export default function FavoriteCities() {
       setData(weather);
       setForecast(forecastData.list);
     } catch (err) {
+        console.log(err)
       setError("❌ Failed to load weather for this city.");
     } finally {
       setLoading(false);

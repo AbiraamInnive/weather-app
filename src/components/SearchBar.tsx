@@ -14,8 +14,8 @@ import { Search, Star } from "lucide-react";
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
-  const [data, setData] = useState<any>(null);
-  const [forecast, setForecast] = useState<any[]>([]);
+  const [data, setData] = useState(null);
+  const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
