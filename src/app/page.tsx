@@ -4,7 +4,6 @@ import SearchBar from '../components/SearchBar';
 import FavoriteCities from '../components/FavouriteCities';
 import CurrentLocationWeather from '../components/CurrentLocationWeather';
 import { ToastContainer } from "react-toastify";
-import DarkModeToggle from '@/components/DarkModeToggle';
 export default function Home() {
 
   return (
@@ -32,10 +31,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Right: Dark Mode */}
-          <div className="z-10">
-            <DarkModeToggle />
-          </div>
         </div>
       </header>
 
