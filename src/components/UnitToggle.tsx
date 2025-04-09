@@ -4,7 +4,6 @@ import { ThermometerSun, ThermometerSnowflake } from "lucide-react";
 
 export default function UnitToggle() {
   const { unit, setUnit } = useWeatherStore();
-console.log(unit,'kiki')
   const isFahrenheit = unit === "imperial";
 
   return (
@@ -15,14 +14,12 @@ console.log(unit,'kiki')
       <button
         onClick={() => setUnit(isFahrenheit ? "metric" : "imperial")}
         aria-label="Toggle temperature unit"
-        className={`cursor-pointer relative w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${
-          isFahrenheit ? "bg-blue-600" : "bg-gray-300"
-        }`}
+        className={`cursor-pointer relative w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${isFahrenheit ? "bg-blue-600" : "bg-gray-300"
+          }`}
       >
         <span
-          className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${
-            isFahrenheit ? "translate-x-6" : "translate-x-0"
-          }`}
+          className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${isFahrenheit ? "translate-x-6" : "translate-x-0"
+            }`}
         ></span>
       </button>
 

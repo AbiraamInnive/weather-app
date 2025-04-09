@@ -10,61 +10,84 @@ import {
 import WeatherCard from "./WeatherCard";
 import ForecastGrid from "./ForecastGrid";
 import { useWeatherStore } from "@/store/useWeatherStore";
-import { Search, Star } from "lucide-react";
+import { Star } from "lucide-react";
+import { toast } from "react-toastify";
+import { DotLoader } from "react-spinners";
 
+export interface WeatherData {
+  name: string;
+  main: {
+    temp: number;
+    feels_like: number;
+    temp_min: number;
+    temp_max: number;
+    humidity: number;
+  };
+  weather: {
+    description: string;
+    icon: string;
+  }[];
+  wind: {
+    speed: number;
+  };
+}
 export default function SearchBar() {
-  const [query, setQuery] = useState("");
-  const [data, setData] = useState(null);
+  const { query, setQuery } = useWeatherStore();
+  const [data, setData] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-
   const { unit, favorites, addFavorite } = useWeatherStore();
 
-  // Fetch weather based on geolocation (only if user hasn’t searched)
   const fetchByCoords = useCallback(async () => {
     if (!navigator.geolocation || hasSearched) return;
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          setLoading(true);
+          setError(null);
 
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      const { latitude, longitude } = position.coords;
-      try {
-        setLoading(true);
-        setError(null);
-
-        const [weather, forecastData] = await Promise.all([
-          getWeatherByCoords(latitude, longitude),
-          getForecastByCoords(latitude, longitude),
-        ]);
-        setData(weather);
-        setForecast(forecastData.list);
-        setQuery(""); // reset query if using location
-      } catch (err) {
-        console.error("Failed to get weather by location", err);
-        setError("❌ Could not get location weather.");
-      } finally {
-        setLoading(false);
+          const [weather, forecastData] = await Promise.all([
+            getWeatherByCoords(latitude, longitude),
+            getForecastByCoords(latitude, longitude),
+          ]);
+          setData(weather);
+          setForecast(forecastData.list);
+          setQuery("");
+        } catch (err: any) {
+          const message = err.message || "Could not get location weather.";
+          setError(message);
+          toast.error(message);
+        } finally {
+          setLoading(false);
+        }
+      },
+      () => {
+        const msg = "Location access denied or unavailable.";
+        setError(msg);
+        toast.error(msg);
       }
-    });
+    );
   }, [hasSearched, unit]);
 
-  // Fetch weather by coordinates once on mount
   useEffect(() => {
     fetchByCoords();
   }, [fetchByCoords]);
 
-  // Re-fetch if unit changes and there's search data
   useEffect(() => {
     if (data?.name && hasSearched) {
       handleSearch();
     }
-  }, [unit]); // only refetch for unit change if searched manually
+  }, [unit]);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
+
     setLoading(true);
     setError(null);
-    setHasSearched(true); // Mark that user has manually searched
+    setHasSearched(true);
 
     try {
       const [weather, forecastData] = await Promise.all([
@@ -73,9 +96,13 @@ export default function SearchBar() {
       ]);
       setData(weather);
       setForecast(forecastData.list);
-    } catch (err) {
-      console.error("Search failed:", err);
-      setError("❌ Failed to fetch weather data.");
+    } catch (err: any) {
+      const message =
+        err.message === "city not found"
+          ? "Invalid city or ZIP code."
+          : err.message || "Failed to fetch weather data.";
+      setError(message);
+      toast.error(message);
       setData(null);
       setForecast([]);
     } finally {
@@ -83,41 +110,64 @@ export default function SearchBar() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleSearch();
-  };
+  // Debounce search
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (query.trim()) {
+        handleSearch();
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [query]);
 
   const handleAddFavorite = () => {
-    if (data?.name && !favorites.includes(data.name)) {
-      addFavorite(data.name);
+    if (!data?.name) return;
+    if (favorites.includes(data.name)) {
+      toast.info("Already in favorites.");
+      return;
     }
+    if (favorites.length >= 3) {
+      toast.error("Maximum of 3 cities can be favorited.");
+      return;
+    }
+
+    addFavorite(data.name);
+    toast.success(`${data.name} added to favorites.`);
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 mb-8 w-full px-4">
+    <div className="flex flex-col items-center gap-1 mb-8 w-full px-4">
       {/* Search Input */}
-      <div className="flex w-full max-w-lg shadow-md bg-white rounded-lg overflow-hidden border border-gray-300 focus-within:ring-2 focus-within:ring-blue-400">
-        <input
-          type="text"
-          placeholder="🔍 Search by city or ZIP code..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="flex-grow px-4 py-2 text-sm focus:outline-none"
-        />
-        <button
-          onClick={handleSearch}
-          className="cursor-pointer bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white px-5 py-2 flex items-center gap-2 text-sm"
-        >
-          <Search size={16} />
-          Search
-        </button>
+      <div className="w-full max-w-4xl flex justify-between items-center gap-4">
+        <div className="flex flex-grow justify-between">
+          <div className="flex w-full max-w-lg shadow-md bg-white rounded-lg overflow-hidden border border-gray-300 focus-within:ring-2 focus-within:ring-blue-400">
+            <input
+              type="text"
+              placeholder="🔍 Search by city or ZIP code..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="flex-grow px-4 py-2 text-sm focus:outline-none"
+            />
+          </div>
+        </div>
+
+        {data?.name && (
+          <button
+            onClick={handleAddFavorite}
+            className="flex items-center cursor-pointer gap-2 bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-400 transition whitespace-nowrap"
+          >
+            <Star size={16} />
+            Add to Favorites
+          </button>
+        )}
       </div>
 
       {/* Loading/Error States */}
       {loading && (
-        <div className="text-blue-500 text-sm animate-pulse">
-          Fetching weather data...
+        <div className="flex flex-col items-center mt-4">
+          <DotLoader color="#3b82f6" size={40} />
+          <p className="text-sm text-blue-600 mt-2">Fetching weather data...</p>
         </div>
       )}
       {error && <div className="text-red-500 text-sm">{error}</div>}
@@ -126,13 +176,6 @@ export default function SearchBar() {
       {data && (
         <div className="w-full max-w-4xl flex flex-col items-center gap-4 mt-4">
           <WeatherCard data={data} />
-          <button
-            onClick={handleAddFavorite}
-            className="flex items-center cursor-pointer gap-2 bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-400 transition"
-          >
-            <Star size={16} />
-            Add to Favorites
-          </button>
           <ForecastGrid data={forecast} />
         </div>
       )}

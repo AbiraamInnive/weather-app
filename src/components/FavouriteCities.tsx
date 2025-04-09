@@ -1,27 +1,20 @@
 "use client";
-import { useState,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useWeatherStore } from "@/store/useWeatherStore";
 import { getWeatherByCity, getForecastByCity } from "@/lib/weather";
 import WeatherCard from "./WeatherCard";
 import ForecastGrid from "./ForecastGrid";
 
 export default function FavoriteCities() {
-  const removeAllFavorites = useWeatherStore((state) => state.removeAllFavorites);
-  const removeFavorite = useWeatherStore((state) => state.removeFavorite); // <-- NEW
+  const { triggerSearchFromFavorite, removeFavorite, removeAllFavorites, unit, favorites, query } = useWeatherStore();
+
 
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [data, setData] = useState(null);
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { unit, favorites } = useWeatherStore();
-
-  useEffect(() => {
-    if (selectedCity) {
-      fetchCityWeather(selectedCity,true);
-    }
-  }, [unit]);
-
+  console.log(favorites, unit, query, 'hellu')
   const fetchCityWeather = async (city: string, forceRefresh = false) => {
     if (!forceRefresh && selectedCity === city) {
       setSelectedCity(null);
@@ -29,7 +22,7 @@ export default function FavoriteCities() {
       setForecast([]);
       return;
     }
-  
+
     setSelectedCity(city);
     setLoading(true);
     setError(null);
@@ -41,16 +34,23 @@ export default function FavoriteCities() {
       setData(weather);
       setForecast(forecastData.list);
     } catch (err) {
-        console.log(err)
+      console.log(err)
       setError("❌ Failed to load weather for this city.");
     } finally {
       setLoading(false);
     }
   };
-  
+
+  useEffect(() => {
+    if (selectedCity) {
+      fetchCityWeather(selectedCity, true);
+    }
+  }, [unit, selectedCity, fetchCityWeather]);
+
+
 
   return (
-    <div className="mt-6 w-full">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-xl font-semibold">Favorite Cities</h2>
         {favorites.length > 0 && (
@@ -70,14 +70,13 @@ export default function FavoriteCities() {
         {favorites.map((city) => (
           <div
             key={city}
-            className={`flex items-center px-3 py-1 rounded-full text-sm font-medium transition ${
-              selectedCity === city
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-800"
-            }`}
+            className={`flex items-center px-3 py-1 rounded-full text-sm font-medium transition ${selectedCity === city
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-800"
+              }`}
           >
             <button
-              onClick={() => fetchCityWeather(city)}
+              onClick={() => triggerSearchFromFavorite(city)}
               className="focus:outline-none"
             >
               {city}
