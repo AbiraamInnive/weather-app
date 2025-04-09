@@ -49,7 +49,7 @@ export default function CurrentLocationWeather() {
                 }
             },
             () => {
-                const message = "❌ Location access denied or unavailable.";
+                const message = "Location access denied or unavailable.";
                 setError(message);
                 toast.error(message);
                 setLoading(false);
