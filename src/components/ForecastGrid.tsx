@@ -100,25 +100,30 @@ export default function ForecastGrid({
             <Tooltip
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
-                  const forecastForDay = dailyForecast.find((item) =>
-                    moment(item.dt_txt).format("ddd") === label
+                  const forecastForDay = dailyForecast.find(
+                    (item) => moment(item.dt_txt).format("ddd") === label
                   );
 
-                  const iconUrl = forecastForDay?.weather?.[0]?.icon
+                  if (!forecastForDay) return null;
+
+                  const iconUrl = forecastForDay.weather?.[0]?.icon
                     ? `https://openweathermap.org/img/wn/${forecastForDay.weather[0].icon}@2x.png`
                     : null;
 
                   return (
                     <div className="bg-white border border-gray-300 rounded-lg p-3 shadow-md text-sm text-gray-800">
-                      <p className="flex font-semibold mb-2">{label}{iconUrl && (
-                        <Image
-                          src={iconUrl}
-                          alt={forecastForDay.weather[0].description}
-                          width={30}
-                          height={30}
-                          className="mb-2 mx-auto"
-                        />
-                      )}</p>
+                      <p className="flex font-semibold mb-2">
+                        {label}
+                        {iconUrl && (
+                          <Image
+                            src={iconUrl}
+                            alt={forecastForDay.weather[0].description}
+                            width={30}
+                            height={30}
+                            className="mb-2 mx-auto"
+                          />
+                        )}
+                      </p>
 
                       <div>
                         {payload.map((item, index) => (
@@ -135,6 +140,7 @@ export default function ForecastGrid({
               }}
               cursor={{ strokeDasharray: "3 3" }}
             />
+
             <Legend
               content={<CustomLegend />}
               verticalAlign="top"
