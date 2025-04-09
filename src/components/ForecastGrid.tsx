@@ -11,12 +11,29 @@ import {
   Legend
 } from "recharts";
 
+type ForecastItem = {
+  dt: number;
+  dt_txt: string;
+  main: {
+    temp_max: number;
+    temp_min: number;
+    feels_like: number;
+    humidity: number;
+  };
+  weather: {
+    description: string;
+    icon: string;
+  }[];
+  wind: {
+    speed: number;
+  };
+};
 
 export default function ForecastGrid({
   data,
   DetailedView = true,
 }: {
-  data: any[],
+  data: ForecastItem[];
   DetailedView?: boolean;
 }) {
   if (!data || !Array.isArray(data)) {

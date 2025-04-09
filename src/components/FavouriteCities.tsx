@@ -52,27 +52,17 @@ export default function FavoriteCities() {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl font-semibold">Favorite Cities</h2>
-        {favorites.length > 0 && (
-          <button
-            onClick={removeAllFavorites}
-            className="cursor-pointer text-sm bg-red-100 text-red-600 hover:bg-red-200 transition px-3 py-1 rounded"
-          >
-            Clear Favourites
-          </button>
-        )}
+        <h2 className="text-xl font-semibold">Favourite Cities</h2>
       </div>
 
       <div className="flex flex-wrap gap-2">
         {favorites.length === 0 && (
-          <p className="text-gray-500">No favorites yet.</p>
+          <p className="text-gray-500">No favourites yet.</p>
         )}
         {favorites.map((city) => (
           <div
             key={city}
-            className={`flex items-center px-3 py-1 rounded-full text-sm font-medium transition ${selectedCity === city
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-800"
+            className={`cursor-pointer px-3 py-1 rounded-full text-sm font-medium transition ${selectedCity === city ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
               }`}
           >
             <button

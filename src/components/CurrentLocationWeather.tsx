@@ -40,8 +40,9 @@ export default function CurrentLocationWeather() {
 
                     setData(weather);
                     setForecast(forecastData.list);
-                } catch (err: any) {
-                    const message = err.message || "Could not fetch weather data.";
+                } catch (err) {
+                    const message =
+                        err instanceof Error ? err.message : "Could not fetch weather data.";
                     setError(message);
                     toast.error(message);
                 } finally {

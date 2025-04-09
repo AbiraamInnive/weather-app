@@ -6,8 +6,8 @@ import CurrentLocationWeather from '../components/CurrentLocationWeather';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DarkModeToggle from '@/components/DarkModeToggle';
-
 export default function Home() {
+
   return (
     <div className='bg-gradient-to-br from-blue-100 to-blue-300 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100'>
       <Head>

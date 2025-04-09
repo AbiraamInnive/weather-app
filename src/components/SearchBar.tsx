@@ -40,41 +40,6 @@ export default function SearchBar() {
   const [hasSearched, setHasSearched] = useState(false);
   const { unit, favorites, addFavorite } = useWeatherStore();
 
-  const fetchByCoords = useCallback(async () => {
-    if (!navigator.geolocation || hasSearched) return;
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          setLoading(true);
-          setError(null);
-
-          const [weather, forecastData] = await Promise.all([
-            getWeatherByCoords(latitude, longitude),
-            getForecastByCoords(latitude, longitude),
-          ]);
-          setData(weather);
-          setForecast(forecastData.list);
-          setQuery("");
-        } catch (err: any) {
-          const message = err.message || "Could not get location weather.";
-          setError(message);
-          toast.error(message);
-        } finally {
-          setLoading(false);
-        }
-      },
-      () => {
-        const msg = "Location access denied or unavailable.";
-        setError(msg);
-        toast.error(msg);
-      }
-    );
-  }, [hasSearched, unit]);
-
-  useEffect(() => {
-    fetchByCoords();
-  }, [fetchByCoords]);
 
   useEffect(() => {
     if (data?.name && hasSearched) {
@@ -163,14 +128,31 @@ export default function SearchBar() {
         )}
       </div>
 
-      {/* Loading/Error States */}
+      {/* Initial Prompt */}
+      {!data && !loading && !hasSearched && (
+        <div className="flex justify-center items-center w-full h-[60vh]">
+          <p className="text-gray-600 text-base text-center">
+            🌤️ Start by searching for a city or ZIP code to see the weather forecast.
+          </p>
+        </div>
+      )}
+
+      {/* Loading State */}
       {loading && (
-        <div className="flex flex-col items-center mt-4">
+        <div className="flex justify-center items-center w-full h-[60vh]">
           <DotLoader color="#3b82f6" size={40} />
           <p className="text-sm text-blue-600 mt-2">Fetching weather data...</p>
         </div>
       )}
-      {error && <div className="text-red-500 text-sm">{error}</div>}
+
+      {/* Error Message */}
+      {error && (
+        <div className="flex justify-center items-center w-full h-[60vh]">
+          <p className="text-gray-600 text-base text-center">
+            {error}
+          </p>
+        </div>
+      )}
 
       {/* Weather Info */}
       {data && (
