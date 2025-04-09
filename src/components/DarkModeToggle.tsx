@@ -9,8 +9,12 @@ export default function DarkModeToggle() {
         const root = window.document.documentElement;
         if (isDark) {
             root.classList.add("dark");
+            console.log("Dark mode ON");
+
         } else {
             root.classList.remove("dark");
+            console.log("Dark mode OFF");
+
         }
     }, [isDark]);
 

@@ -4,7 +4,6 @@ import SearchBar from '../components/SearchBar';
 import FavoriteCities from '../components/FavouriteCities';
 import CurrentLocationWeather from '../components/CurrentLocationWeather';
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import DarkModeToggle from '@/components/DarkModeToggle';
 export default function Home() {
 
@@ -52,7 +51,7 @@ export default function Home() {
 
           {/* Center (SearchBar) */}
           <section className="lg:col-span-6 flex flex-col h-full">
-            <div className="flex-grow bg-white/30 dark:bg-gray-800/30 backdrop-blur-md border border-white/20 dark:border-gray-700 rounded-2xl shadow-lg p-4 transition-all hover:shadow-xl h-full">
+            <div className="flex-grow bg-white/30 dark backdrop-blur-md border border-white/20 dark:border-gray-700 rounded-2xl shadow-lg p-4 transition-all hover:shadow-xl h-full">
               <SearchBar />
             </div>
           </section>
