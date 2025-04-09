@@ -6,7 +6,7 @@ import WeatherCard from "./WeatherCard";
 import ForecastGrid from "./ForecastGrid";
 
 export default function FavoriteCities() {
-  const { triggerSearchFromFavorite, removeFavorite, removeAllFavorites, unit, favorites, query } = useWeatherStore();
+  const { triggerSearchFromFavorite, removeFavorite, unit, favorites, query } = useWeatherStore();
 
 
   const [selectedCity, setSelectedCity] = useState<string | null>(null);

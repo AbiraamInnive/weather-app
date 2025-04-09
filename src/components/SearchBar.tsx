@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   getWeatherByCity,
   getForecastByCity,
-  getWeatherByCoords,
-  getForecastByCoords,
 } from "@/lib/weather";
 import WeatherCard from "./WeatherCard";
 import ForecastGrid from "./ForecastGrid";
